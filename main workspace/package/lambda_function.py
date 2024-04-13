@@ -45,7 +45,7 @@ def lambda_handler(event, context):
             logger.info(res.read().decode("utf-8"))
             
 
-    # Returning a response indicating successful executio
+    # Returning a response indicating successful execution
     return {
         'statusCode': 200,
         'body': json.dumps('Hello from Lambda!')

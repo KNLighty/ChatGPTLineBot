@@ -20,7 +20,7 @@ def lambda_handler(event, context):
         
         
         # Headers required for the API request
-        headers = { # THE KEY IS HARDCODED, CHANGE THIS LATER PLEASE
+        headers = { 
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + os.environ.get('LINE_CHANNEL_ACCESS_TOKEN')
         }

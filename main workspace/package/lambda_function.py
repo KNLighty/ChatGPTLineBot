@@ -12,6 +12,8 @@ def lambda_handler(event, context):
 
   # Iterate over each message event in the received payload
     for message_event in json.loads(event['body'])['events']:
+        start_loading_animation(message_event['source']['userId'])
+
         # URL for the LINE Messaging API
         url = 'https://api.line.me/v2/bot/message/reply'
 
@@ -41,8 +43,7 @@ def lambda_handler(event, context):
         
         # Opening the URL and sending the request, capturing the response
         with urllib.request.urlopen(req) as res:
-            # Logging the response content (Assuming logger is defined elsewhere)
-            logger.info(res.read().decode("utf-8"))
+            pass
             
 
     # Returning a response indicating successful execution
@@ -50,6 +51,23 @@ def lambda_handler(event, context):
         'statusCode': 200,
         'body': json.dumps('Hello from Lambda!')
     }
+
+def start_loading_animation(user_id):
+    url_loading_animation = 'https://api.line.me/v2/bot/chat/loading/start'
+    
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + os.environ.get('LINE_CHANNEL_ACCESS_TOKEN')
+    }
+        
+    body = {
+        "chatId": user_id,
+        "loadingSeconds": 5
+    }
+    
+    req = urllib.request.Request(url_loading_animation, data=json.dumps(body).encode('utf-8'), method='POST', headers=headers)
+    with urllib.request.urlopen(req) as res:
+        pass
 
 # Generate chatGPT response
 def generate_response(text):

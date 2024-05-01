@@ -14,36 +14,11 @@ def lambda_handler(event, context):
     for message_event in json.loads(event['body'])['events']:
         start_loading_animation(message_event['source']['userId'])
 
-        # URL for the LINE Messaging API
-        url = 'https://api.line.me/v2/bot/message/reply'
-
         # Generate response
         response = generate_response(message_event['message']['text'])
         
-        
-        # Headers required for the API request
-        headers = { 
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + os.environ.get('LINE_CHANNEL_ACCESS_TOKEN')
-        }
-        
-        # Constructing the message body to be sent as a response
-        body = {
-            'replyToken': message_event['replyToken'], # Token for replying to the specific event
-            'messages': [
-                {
-                    "type": "text",
-                    "text": response
-                }
-            ]
-        }
-        
-        # Creating a request object with necessary parameters
-        req = urllib.request.Request(url, data=json.dumps(body).encode('utf-8'), method='POST', headers=headers)
-        
-        # Opening the URL and sending the request, capturing the response
-        with urllib.request.urlopen(req) as res:
-            pass
+        # Send reply message
+        send_reply(message_event, response)
             
 
     # Returning a response indicating successful execution
@@ -83,3 +58,33 @@ def generate_response(text):
         return response.choices[0].text.strip()
     else:
         return "Something seams to be wrong here!"
+
+
+# Send reply message to a User
+def send_reply(message_event, generated_response):
+    # URL for the LINE Messaging API
+    url = 'https://api.line.me/v2/bot/message/reply'
+
+    # Headers required for the API request
+    headers = { 
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + os.environ.get('LINE_CHANNEL_ACCESS_TOKEN')
+    }
+        
+    # Constructing the message body to be sent as a response
+    body = {
+        'replyToken': message_event['replyToken'], # Token for replying to the specific event
+        'messages': [
+            {
+                "type": "text",
+                "text": generated_response
+            }
+        ]
+    } 
+
+    # Creating a request object with necessary parameters
+    req = urllib.request.Request(url, data=json.dumps(body).encode('utf-8'), method='POST', headers=headers)
+        
+    # Opening the URL and sending the request, capturing the response
+    with urllib.request.urlopen(req) as res:
+        pass
